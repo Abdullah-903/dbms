@@ -575,3 +575,76 @@ Func GeneratePassword($iLength, $bLetters, $bNumbers, $bSpecial)
     
     Return $sPassword
 EndFunc
+
+;;;;;;;;;;""""code for calculator
+#include <GUIConstantsEx.au3>
+#include <WindowsConstants.au3>
+#include <EditConstants.au3>
+
+; Create GUI
+Global $hGUI = GUICreate("AutoIt Calculator", 300, 400)
+
+; Input box
+Global $input = GUICtrlCreateInput("", 10, 10, 280, 40, $ES_RIGHT)
+
+; Define labels for buttons
+Global $labels[17] = ["7", "8", "9", "/", _
+                      "4", "5", "6", "*", _
+                      "1", "2", "3", "-", _
+                      "0", ".", "=", "+", _
+                      "C"]
+
+; Create buttons and store control IDs
+Global $btn[17]
+Local $x = 10, $y = 60, $w = 60, $h = 50
+
+For $i = 0 To 16
+    $btn[$i] = GUICtrlCreateButton($labels[$i], $x, $y, $w, $h)
+    $x += $w + 10
+    If Mod($i + 1, 4) = 0 Then
+        $x = 10
+        $y += $h + 10
+    EndIf
+Next
+
+GUISetState()
+
+; Event loop
+While 1
+    $msg = GUIGetMsg()
+
+    Switch $msg
+        Case $GUI_EVENT_CLOSE
+            Exit
+
+        Case Else
+            For $i = 0 To 16
+                If $msg = $btn[$i] Then
+                    Local $label = $labels[$i]
+
+                    Switch $label
+                        Case "="
+                            Local $expr = GUICtrlRead($input)
+                            Local $result = ExecuteExpression($expr)
+                            GUICtrlSetData($input, $result)
+
+                        Case "C"
+                            GUICtrlSetData($input, "")
+
+                        Case Else
+                            GUICtrlSetData($input, GUICtrlRead($input) & $label)
+                    EndSwitch
+                EndIf
+            Next
+    EndSwitch
+WEnd
+
+; Function to evaluate the expression
+Func ExecuteExpression($expr)
+    Local $result = Execute($expr)
+    If @error Then
+        Return "Error"
+    EndIf
+    Return $result
+EndFunc
+

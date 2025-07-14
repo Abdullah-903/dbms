@@ -1,0 +1,577 @@
+; ===============================================
+; AutoIt Scripts Collection - All Questions
+; ===============================================
+
+; 1. Custom Hotkey Actions
+; Write a script that assigns custom actions to specific hotkeys.
+; For example: Ctrl + Alt + N opens Notepad, Ctrl + Alt + B opens a specific folder, Ctrl + Alt + E exits the script.
+
+; 2. Basic GUI File Opener
+; Create a GUI with a button that opens a file dialog. When the user selects a file, display the file's path in a text box.
+
+; 3. Simple Screenshot Tool
+; Write a script that takes a screenshot when a specific hotkey (e.g., PrintScreen) is pressed and saves it to a predefined folder with a timestamp in the filename.
+
+; 4. Log File Creator
+; Create a script that generates a log file whenever it's run. The log file should:
+; Record the current date and time, Append a simple message like "Script executed successfully."
+
+; 5. Desktop Cleanup Helper
+; Write a script to identify and move all .lnk (shortcut) files from the desktop to a folder called "Shortcuts" on the desktop.
+
+; 6. Automated Window Resizer
+; Develop a script that identifies a specific window (e.g., Notepad) by its title and resizes it to specific dimensions (e.g., 800x600 pixels).
+
+; 7. Basic Countdown Timer
+; Create a script with a GUI to set a countdown timer. When the timer reaches zero, it displays a message box or plays a sound.
+
+; 8. Simple Text File Reader
+; Write a script that opens a specified .txt file, reads its contents, and displays them in a message box or GUI.
+
+; 9. Automated Folder Creator
+; Create a script that takes user input (e.g., via an input box or GUI) to specify a folder name. The script should then create the folder in a predefined location.
+
+; 10. Window Focus Checker
+; Write a script that constantly checks which window is currently active and logs the window titles to a text file.
+
+; 11. Text Repeater
+; Create a script that asks the user for a phrase and a number, then repeatedly types the phrase that many times into any open application.
+
+; 12. Folder Size Calculator
+; Write a script that calculates the total size of a specified folder and displays the result in a message box.
+
+; 13. Window Title Logger
+; Develop a script that runs in the background and logs the titles of all windows that the user switches to, saving the log to a text file.
+
+; 14. Simple Process Checker
+; Create a script that checks if a specific process (e.g., notepad.exe) is running. If it is, display a message; otherwise, start the application.
+
+; 15. Temporary File Cleaner
+; Write a script that deletes all files in the system's temporary folder and displays a summary of the number of files deleted.
+
+; 16. Custom Shutdown Timer
+; Create a script with an input box where the user can specify the number of minutes after which the system should shut down.
+
+; 17. Random Password Generator
+; Develop a script that generates a random password of a specified length containing letters, numbers, and special characters, then displays it in a message box.
+
+; ===============================================
+; SCRIPT IMPLEMENTATIONS
+; ===============================================
+
+; 1. Custom Hotkey Actions
+; Question: Write a script that assigns custom actions to specific hotkeys.
+; For example: Ctrl + Alt + N opens Notepad, Ctrl + Alt + B opens a specific folder, Ctrl + Alt + E exits the script.
+; Mohit Lalwani/AB
+HotKeySet("^!n", "OpenNotepad")
+HotKeySet("^!b", "OpenFolder")
+HotKeySet("^!e", "ExitScript")
+
+Func OpenNotepad()
+    Run("notepad.exe")
+EndFunc
+
+Func OpenFolder()
+    Run("explorer.exe C:\")
+EndFunc
+
+Func ExitScript()
+    Exit
+EndFunc
+
+; Keep script running
+While 1
+    Sleep(100)
+WEnd
+
+; ===============================================
+
+; 2. Basic GUI File Opener
+; Question: Create a GUI with a button that opens a file dialog. When the user selects a file, display the file's path in a text box.
+; Saakshi Shenoy/AB
+#include <GUIConstantsEx.au3>
+#include <MsgBoxConstants.au3>
+
+$hGUI = GUICreate("File Opener", 400, 150)
+$btnOpen = GUICtrlCreateButton("Open File", 150, 50, 100, 30)
+$lblPath = GUICtrlCreateLabel("Selected file path will appear here", 20, 100, 360, 20)
+GUISetState(@SW_SHOW)
+
+While 1
+    $nMsg = GUIGetMsg()
+    Switch $nMsg
+        Case $GUI_EVENT_CLOSE
+            Exit
+        Case $btnOpen
+            $sFilePath = FileOpenDialog("Select a file", @DesktopDir, "All files (*.*)")
+            If Not @error Then
+                GUICtrlSetData($lblPath, "File: " & $sFilePath)
+            EndIf
+    EndSwitch
+WEnd
+
+; ===============================================
+
+; 3. Simple Screenshot Tool
+; Question: Write a script that takes a screenshot when a specific hotkey (e.g., PrintScreen) is pressed and saves it to a predefined folder with a timestamp in the filename.
+; Krisha Parekh/AB
+#include <GUIConstantsEx.au3>
+#include <Date.au3>
+
+HotKeySet("{PRINTSCREEN}", "TakeScreenshot")
+
+Func TakeScreenshot()
+    $sTimestamp = StringReplace(_NowCalc(), "/", "-")
+    $sTimestamp = StringReplace($sTimestamp, ":", "-")
+    $sTimestamp = StringReplace($sTimestamp, " ", "_")
+    
+    $sFolder = @DesktopDir & "\Screenshots"
+    DirCreate($sFolder)
+    
+    $sFilePath = $sFolder & "\Screenshot_" & $sTimestamp & ".png"
+    
+    ; Take screenshot using built-in function
+    _ScreenCapture_Capture($sFilePath)
+    
+    MsgBox(0, "Screenshot", "Screenshot saved to: " & $sFilePath)
+EndFunc
+
+#include <ScreenCapture.au3>
+
+; Keep script running
+While 1
+    Sleep(100)
+WEnd
+
+; ===============================================
+
+; 4. Log File Creator
+; Question: Create a script that generates a log file whenever it's run. The log file should:
+; Record the current date and time, Append a simple message like "Script executed successfully."
+; Harshwardhan Chauhan/AB
+#include <Date.au3>
+
+$sLogFile = @ScriptDir & "\script_log.txt"
+CreateLogEntry("Script executed successfully.")
+
+Func CreateLogEntry($sMessage)
+    Local $sDateTime = _NowCalc()
+    Local $sLogEntry = $sDateTime & " - " & $sMessage & @CRLF
+    
+    FileWrite($sLogFile, $sLogEntry)
+    MsgBox(0, "Log Created", "Log entry added to: " & $sLogFile)
+EndFunc
+
+; ===============================================
+
+; 5. Desktop Cleanup Helper
+; Question: Write a script to identify and move all .lnk (shortcut) files from the desktop to a folder called "Shortcuts" on the desktop.
+; Ishita Shah/AB
+$sDesktopPath = @DesktopDir
+$sShortcutsFolder = $sDesktopPath & "\Shortcuts"
+
+DirCreate($sShortcutsFolder)
+
+$aFiles = _FileListToArray($sDesktopPath, "*.lnk", 1)
+If IsArray($aFiles) Then
+    For $i = 1 To $aFiles[0]
+        FileMove($sDesktopPath & "\" & $aFiles[$i], $sShortcutsFolder & "\" & $aFiles[$i])
+    Next
+    MsgBox(0, "Cleanup Complete", $aFiles[0] & " shortcut files moved to Shortcuts folder")
+Else
+    MsgBox(0, "No Files", "No .lnk files found on desktop")
+EndIf
+
+#include <File.au3>
+
+; ===============================================
+
+; 6. Automated Window Resizer
+; Question: Develop a script that identifies a specific window (e.g., Notepad) by its title and resizes it to specific dimensions (e.g., 800x600 pixels).
+; Ram Rathod/AB
+#include <WinAPI.au3>
+
+$sWindowTitle = InputBox("Window Resizer", "Enter window title to resize (e.g., Notepad):")
+If Not @error Then
+    $hWnd = WinGetHandle($sWindowTitle)
+    If $hWnd <> 0 Then
+        WinMove($hWnd, "", Default, Default, 800, 600)
+        MsgBox(0, "Success", "Window resized to 800x600 pixels")
+    Else
+        MsgBox(0, "Error", "Window not found: " & $sWindowTitle)
+    EndIf
+EndIf
+
+; ===============================================
+
+; 7. Basic Countdown Timer
+; Question: Create a script with a GUI to set a countdown timer. When the timer reaches zero, it displays a message box or plays a sound.
+; Archee Patel/AB
+#include <GUIConstantsEx.au3>
+#include <StaticConstants.au3>
+
+$hGUI = GUICreate("Countdown Timer", 300, 150)
+$inputMinutes = GUICtrlCreateInput("", 50, 30, 100, 20)
+GUICtrlCreateLabel("Minutes:", 10, 32, 50, 20)
+$btnStart = GUICtrlCreateButton("Start Timer", 50, 60, 100, 30)
+$lblCountdown = GUICtrlCreateLabel("", 50, 100, 200, 30, $SS_CENTER)
+GUISetState(@SW_SHOW)
+
+While 1
+    $nMsg = GUIGetMsg()
+    Switch $nMsg
+        Case $GUI_EVENT_CLOSE
+            Exit
+        Case $btnStart
+            $iMinutes = Int(GUICtrlRead($inputMinutes))
+            If $iMinutes > 0 Then
+                StartCountdown($iMinutes)
+            EndIf
+    EndSwitch
+WEnd
+
+Func StartCountdown($iMinutes)
+    Local $iSeconds = $iMinutes * 60
+    
+    While $iSeconds > 0
+        Local $iMins = Int($iSeconds / 60)
+        Local $iSecs = Mod($iSeconds, 60)
+        GUICtrlSetData($lblCountdown, StringFormat("%02d:%02d", $iMins, $iSecs))
+        Sleep(1000)
+        $iSeconds -= 1
+    WEnd
+    
+    GUICtrlSetData($lblCountdown, "Time's Up!")
+    MsgBox(0, "Timer", "Countdown finished!")
+    Beep(1000, 1000)
+EndFunc
+
+; ===============================================
+
+; 8. Simple Text File Reader
+; Question: Write a script that opens a specified .txt file, reads its contents, and displays them in a message box or GUI.
+; Kripa Joshi/AB
+#include <GUIConstantsEx.au3>
+#include <EditConstants.au3>
+
+$hGUI = GUICreate("Text File Reader", 600, 400)
+$btnOpen = GUICtrlCreateButton("Open Text File", 250, 10, 100, 30)
+$editContent = GUICtrlCreateEdit("", 10, 50, 580, 340, $ES_MULTILINE + $ES_READONLY + $WS_VSCROLL)
+GUISetState(@SW_SHOW)
+
+While 1
+    $nMsg = GUIGetMsg()
+    Switch $nMsg
+        Case $GUI_EVENT_CLOSE
+            Exit
+        Case $btnOpen
+            $sFilePath = FileOpenDialog("Select text file", @DesktopDir, "Text files (*.txt)")
+            If Not @error Then
+                $sContent = FileRead($sFilePath)
+                GUICtrlSetData($editContent, $sContent)
+            EndIf
+    EndSwitch
+WEnd
+
+; ===============================================
+
+; 9. Automated Folder Creator
+; Question: Create a script that takes user input (e.g., via an input box or GUI) to specify a folder name. The script should then create the folder in a predefined location.
+; Arya Bansode/AB
+#include <GUIConstantsEx.au3>
+
+$hGUI = GUICreate("Folder Creator", 400, 120)
+$inputFolder = GUICtrlCreateInput("", 80, 30, 200, 20)
+GUICtrlCreateLabel("Folder Name:", 10, 32, 70, 20)
+$btnCreate = GUICtrlCreateButton("Create Folder", 80, 60, 100, 30)
+$btnBrowse = GUICtrlCreateButton("Browse Location", 190, 60, 100, 30)
+GUISetState(@SW_SHOW)
+
+$sLocation = @DesktopDir
+
+While 1
+    $nMsg = GUIGetMsg()
+    Switch $nMsg
+        Case $GUI_EVENT_CLOSE
+            Exit
+        Case $btnBrowse
+            $sLocation = FileSelectFolder("Select location for new folder", "")
+            If @error Then $sLocation = @DesktopDir
+        Case $btnCreate
+            $sFolderName = GUICtrlRead($inputFolder)
+            If $sFolderName <> "" Then
+                $sFullPath = $sLocation & "\" & $sFolderName
+                If DirCreate($sFullPath) Then
+                    MsgBox(0, "Success", "Folder created: " & $sFullPath)
+                Else
+                    MsgBox(0, "Error", "Failed to create folder")
+                EndIf
+            EndIf
+    EndSwitch
+WEnd
+
+; ===============================================
+
+; 10. Window Focus Checker
+; Question: Write a script that constantly checks which window is currently active and logs the window titles to a text file.
+; Vanshita Shah/AB
+#include <File.au3>
+
+$sLogFile = @ScriptDir & "\window_focus_log.txt"
+FileDelete($sLogFile)
+
+While 1
+    $sActiveWindow = WinGetTitle("[ACTIVE]")
+    $sLogEntry = _NowCalc() & " - Active Window: " & $sActiveWindow & @CRLF
+    FileWrite($sLogFile, $sLogEntry)
+    Sleep(5000) ; Check every 5 seconds
+WEnd
+
+; ===============================================
+
+; 11. Text Repeater
+; Question: Create a script that asks the user for a phrase and a number, then repeatedly types the phrase that many times into any open application.
+; Priyanshi Siddhapura/AB
+#include <GUIConstantsEx.au3>
+
+$hGUI = GUICreate("Text Repeater", 400, 180)
+$inputText = GUICtrlCreateInput("", 80, 30, 200, 20)
+$inputCount = GUICtrlCreateInput("", 80, 60, 200, 20)
+GUICtrlCreateLabel("Text:", 10, 32, 50, 20)
+GUICtrlCreateLabel("Count:", 10, 62, 50, 20)
+$btnRepeat = GUICtrlCreateButton("Start Repeating", 80, 100, 100, 30)
+$btnStop = GUICtrlCreateButton("Stop", 190, 100, 100, 30)
+GUISetState(@SW_SHOW)
+
+Global $bRepeat = False
+
+While 1
+    $nMsg = GUIGetMsg()
+    Switch $nMsg
+        Case $GUI_EVENT_CLOSE
+            Exit
+        Case $btnRepeat
+            $sText = GUICtrlRead($inputText)
+            $iCount = Int(GUICtrlRead($inputCount))
+            If $sText <> "" And $iCount > 0 Then
+                $bRepeat = True
+                StartRepeating($sText, $iCount)
+            EndIf
+        Case $btnStop
+            $bRepeat = False
+    EndSwitch
+WEnd
+
+Func StartRepeating($sText, $iCount)
+    Sleep(3000) ; 3 second delay to switch to target application
+    For $i = 1 To $iCount
+        If Not $bRepeat Then ExitLoop
+        Send($sText & "{ENTER}")
+        Sleep(100)
+    Next
+EndFunc
+
+; ===============================================
+
+; 12. Folder Size Calculator
+; Question: Write a script that calculates the total size of a specified folder and displays the result in a message box.
+; Soumyajit Gharami/AB
+#include <GUIConstantsEx.au3>
+#include <File.au3>
+
+$hGUI = GUICreate("Folder Size Calculator", 500, 150)
+$btnBrowse = GUICtrlCreateButton("Select Folder", 50, 30, 100, 30)
+$lblResult = GUICtrlCreateLabel("Select a folder to calculate its size", 50, 80, 400, 40)
+GUISetState(@SW_SHOW)
+
+While 1
+    $nMsg = GUIGetMsg()
+    Switch $nMsg
+        Case $GUI_EVENT_CLOSE
+            Exit
+        Case $btnBrowse
+            $sFolder = FileSelectFolder("Select folder to calculate size", "")
+            If Not @error Then
+                $iSize = DirGetSize($sFolder)
+                $sSizeFormatted = FormatBytes($iSize)
+                GUICtrlSetData($lblResult, "Folder: " & $sFolder & @CRLF & "Size: " & $sSizeFormatted)
+            EndIf
+    EndSwitch
+WEnd
+
+Func FormatBytes($iBytes)
+    If $iBytes < 1024 Then
+        Return $iBytes & " bytes"
+    ElseIf $iBytes < 1024 * 1024 Then
+        Return Round($iBytes / 1024, 2) & " KB"
+    ElseIf $iBytes < 1024 * 1024 * 1024 Then
+        Return Round($iBytes / (1024 * 1024), 2) & " MB"
+    Else
+        Return Round($iBytes / (1024 * 1024 * 1024), 2) & " GB"
+    EndIf
+EndFunc
+
+; ===============================================
+
+; 13. Window Title Logger
+; Question: Develop a script that runs in the background and logs the titles of all windows that the user switches to, saving the log to a text file.
+; Akshat Shetye/AB
+#include <File.au3>
+
+$sLogFile = @ScriptDir & "\window_titles_log.txt"
+FileDelete($sLogFile)
+
+While 1
+    $aWindows = WinList()
+    For $i = 1 To $aWindows[0][0]
+        If $aWindows[$i][0] <> "" And BitAND(WinGetState($aWindows[$i][1]), 2) Then
+            $sLogEntry = _NowCalc() & " - " & $aWindows[$i][0] & @CRLF
+            FileWrite($sLogFile, $sLogEntry)
+        EndIf
+    Next
+    Sleep(10000) ; Log every 10 seconds
+WEnd
+
+; ===============================================
+
+; 14. Simple Process Checker
+; Question: Create a script that checks if a specific process (e.g., notepad.exe) is running. If it is, display a message; otherwise, start the application.
+; Arpita Hule/AB
+#include <GUIConstantsEx.au3>
+
+$hGUI = GUICreate("Process Checker", 400, 150)
+$inputProcess = GUICtrlCreateInput("notepad.exe", 80, 30, 200, 20)
+GUICtrlCreateLabel("Process:", 10, 32, 60, 20)
+$btnCheck = GUICtrlCreateButton("Check Process", 80, 60, 100, 30)
+$btnStart = GUICtrlCreateButton("Start Process", 190, 60, 100, 30)
+$lblStatus = GUICtrlCreateLabel("", 80, 100, 300, 30)
+GUISetState(@SW_SHOW)
+
+While 1
+    $nMsg = GUIGetMsg()
+    Switch $nMsg
+        Case $GUI_EVENT_CLOSE
+            Exit
+        Case $btnCheck
+            $sProcess = GUICtrlRead($inputProcess)
+            If ProcessExists($sProcess) Then
+                GUICtrlSetData($lblStatus, $sProcess & " is running")
+            Else
+                GUICtrlSetData($lblStatus, $sProcess & " is not running")
+            EndIf
+        Case $btnStart
+            $sProcess = GUICtrlRead($inputProcess)
+            If Not ProcessExists($sProcess) Then
+                Run($sProcess)
+                GUICtrlSetData($lblStatus, "Started " & $sProcess)
+            Else
+                GUICtrlSetData($lblStatus, $sProcess & " is already running")
+            EndIf
+    EndSwitch
+WEnd
+
+; ===============================================
+
+; 15. Temporary File Cleaner
+; Question: Write a script that deletes all files in the system's temporary folder and displays a summary of the number of files deleted.
+; Shubham Gupta/AB
+#include <File.au3>
+
+$sTempFolder = @TempDir
+$aFiles = _FileListToArray($sTempFolder, "*.*", 1)
+
+If IsArray($aFiles) Then
+    Local $iDeleted = 0
+    For $i = 1 To $aFiles[0]
+        If FileDelete($sTempFolder & "\" & $aFiles[$i]) Then
+            $iDeleted += 1
+        EndIf
+    Next
+    MsgBox(0, "Cleanup Complete", $iDeleted & " temporary files deleted from " & $sTempFolder)
+Else
+    MsgBox(0, "No Files", "No temporary files found")
+EndIf
+
+; ===============================================
+
+; 16. Custom Shutdown Timer
+; Question: Create a script with an input box where the user can specify the number of minutes after which the system should shut down.
+; Kalu Abdullah Sharafat/AB
+#include <GUIConstantsEx.au3>
+
+$hGUI = GUICreate("Shutdown Timer", 300, 150)
+$inputMinutes = GUICtrlCreateInput("", 80, 30, 100, 20)
+GUICtrlCreateLabel("Minutes:", 10, 32, 60, 20)
+$btnSet = GUICtrlCreateButton("Set Timer", 80, 60, 100, 30)
+$btnCancel = GUICtrlCreateButton("Cancel", 80, 100, 100, 30)
+GUISetState(@SW_SHOW)
+
+While 1
+    $nMsg = GUIGetMsg()
+    Switch $nMsg
+        Case $GUI_EVENT_CLOSE
+            Exit
+        Case $btnSet
+            $iMinutes = Int(GUICtrlRead($inputMinutes))
+            If $iMinutes > 0 Then
+                $iSeconds = $iMinutes * 60
+                RunWait(@ComSpec & " /c shutdown /s /t " & $iSeconds, "", @SW_HIDE)
+                MsgBox(0, "Timer Set", "System will shutdown in " & $iMinutes & " minutes")
+            EndIf
+        Case $btnCancel
+            RunWait(@ComSpec & " /c shutdown /a", "", @SW_HIDE)
+            MsgBox(0, "Cancelled", "Shutdown timer cancelled")
+    EndSwitch
+WEnd
+
+; ===============================================
+
+; 17. Random Password Generator
+; Question: Develop a script that generates a random password of a specified length containing letters, numbers, and special characters, then displays it in a message box.
+; Adnan Khan/AB
+#include <GUIConstantsEx.au3>
+
+$hGUI = GUICreate("Password Generator", 400, 200)
+$inputLength = GUICtrlCreateInput("12", 80, 30, 100, 20)
+GUICtrlCreateLabel("Length:", 10, 32, 60, 20)
+$chkLetters = GUICtrlCreateCheckbox("Letters", 10, 60, 80, 20)
+$chkNumbers = GUICtrlCreateCheckbox("Numbers", 100, 60, 80, 20)
+$chkSpecial = GUICtrlCreateCheckbox("Special", 190, 60, 80, 20)
+$btnGenerate = GUICtrlCreateButton("Generate", 80, 90, 100, 30)
+$editPassword = GUICtrlCreateEdit("", 10, 130, 380, 50)
+
+GUICtrlSetState($chkLetters, $GUI_CHECKED)
+GUICtrlSetState($chkNumbers, $GUI_CHECKED)
+GUICtrlSetState($chkSpecial, $GUI_CHECKED)
+
+GUISetState(@SW_SHOW)
+
+While 1
+    $nMsg = GUIGetMsg()
+    Switch $nMsg
+        Case $GUI_EVENT_CLOSE
+            Exit
+        Case $btnGenerate
+            $iLength = Int(GUICtrlRead($inputLength))
+            $bLetters = GUICtrlRead($chkLetters) = $GUI_CHECKED
+            $bNumbers = GUICtrlRead($chkNumbers) = $GUI_CHECKED
+            $bSpecial = GUICtrlRead($chkSpecial) = $GUI_CHECKED
+            
+            $sPassword = GeneratePassword($iLength, $bLetters, $bNumbers, $bSpecial)
+            GUICtrlSetData($editPassword, $sPassword)
+    EndSwitch
+WEnd
+
+Func GeneratePassword($iLength, $bLetters, $bNumbers, $bSpecial)
+    Local $sChars = ""
+    If $bLetters Then $sChars &= "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    If $bNumbers Then $sChars &= "0123456789"
+    If $bSpecial Then $sChars &= "!@#$%^&*()_+-=[]{}|;:,.<>?"
+    
+    Local $sPassword = ""
+    For $i = 1 To $iLength
+        $sPassword &= StringMid($sChars, Random(1, StringLen($sChars), 1), 1)
+    Next
+    
+    Return $sPassword
+EndFunc

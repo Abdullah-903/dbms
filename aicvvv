@@ -1,0 +1,367 @@
+Practical 1 
+
+a) Liner regression 
+
+#Step 1: import libraries
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+
+#Step 2: Data to train
+x = np.array([ 1000, 1500, 2000, 2500, 3000 ]).reshape(-1,1) #we call this as a feature
+y = np.array([ 150000, 200000, 250000, 300000, 350000 ])
+
+#Train the model
+model = LinearRegression() #feature
+model.fit(x,y) #target
+
+print("intercept =", model.intercept_)
+print("slope =", model.coef_[0])
+
+#Predict the price for "2200"
+predicted_price = model.predict([[ 2200 ]])
+print("Predicted price =", predicted_price)
+
+#Data Visualisation
+plt.scatter(x, y, color = "blue", label="actual data")
+plt.plot(x, model.predict(x), color = "red", label = "regression")
+plt.scatter(2200, predicted_price, color="green", label = "Predicted Price")
+plt.xlabel("Square Footage")
+plt.ylabel("Price")
+plt.legend()
+plt.show()
+b) Logistic Regression 
+
+#prac 1b: WAP to predict if a patient has diabeties or not, using logistic regression
+
+#Step 1: import libraries
+import numpy as np
+from sklearn.linear_model import LogisticRegression
+
+#Data to train
+x = np.array([ [120,45],[85,30],[150,50],[70,55],[95,35],[180,55] ])
+y = np.array([ 1,0,1,0,0,1 ])
+
+#Training the model
+model = LogisticRegression()
+model.fit(x,y)
+prediction = model.predict([ [200,40] ])
+
+probability = model.predict_proba([[100,40]])
+
+print("prediction",prediction)
+print("probability",probability)
+
+
+
+
+
+
+
+
+
+
+
+c) Decision tree algorithm 
+
+#prac 1c : Decision Tree Algorithm
+#WAP to predict if customer will buy the product or not
+#yes = 1, no = 0
+
+#Step 1: import libraries
+import numpy as np
+from sklearn.tree import DecisionTreeClassifier
+from sklearn import tree
+import matplotlib.pyplot as plt
+
+#if income: low=0, mid=1, high=2
+
+x = np.array([ [25,0],[30,1],[45,2],[35,1],[50,0] ])
+y = np.array( [1,0,0,0,1] )
+
+#train
+model = DecisionTreeClassifier(max_depth=3, random_state=42)
+model.fit(x,y)
+
+#predict future
+prediction = model.predict([ [30,3] ])
+print("prediction",prediction)
+
+#data visulisation of tree
+plt.figure(figsize=(5,7))
+tree.plot_tree(model, feature_names=["age","income"] ,class_names=["yes","no"], filled=True)
+plt.show()
+
+
+
+
+d) K neighbours classifier 
+
+#prac 1d
+#WAP to predict if student will pass or fail
+#pass = 1, fail = 0
+
+#Step 1: import libraries
+import numpy as np
+from sklearn.neighbors import KNeighborsClassifier
+
+#if income: low=0, mid=1, high=2
+# study, sleep
+x = np.array([ [2,5],[4,6],[5,7],[1,4],[3,5],[6,8] ])
+y = np.array( [0,1,1,0,0,1] )
+
+#train
+model = KNeighborsClassifier(n_neighbors=3)
+model.fit(x,y)
+
+#predict future
+prediction = model.predict([ [4,5] ])
+probability = model.predict_proba([ [4,5] ])
+print("prediction",prediction)
+print("probability",probability)
+
+
+
+
+
+
+
+Practical 2 
+
+#prac 2
+#WAP to work with supervised learning and predict student exam result
+#pass = 1, fail = 0
+
+#Step 1: import libraries
+import numpy as np
+from sklearn.linear_model import LogisticRegression
+
+#if income: low=0, mid=1, high=2
+x = np.array([ [2],[4],[6],[8],[10] ]) #study hours
+y = np.array( [0,0,1,1,1] )
+
+#train
+model = LogisticRegression()
+model.fit(x,y)
+
+#predict future
+prediction = model.predict([ [5] ])
+probability = model.predict_proba([ [5] ])
+print("prediction",prediction)
+print("probability",probability) #pass,fail
+ 
+Practical 3 :
+import numpy as np
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+x=np.array([[15,39],[16,81],[17,6],[18,77],[19,40],[20,80]])
+kmeans=KMeans(n_clusters=3)
+kmeans.fit(x)
+labels=kmeans.labels_
+print(labels)
+plt.scatter(x[:,0],x[:,1],c=labels,cmap='rainbow')
+plt.scatter(kmeans.cluster_centers_[:,0],kmeans.cluster_centers_[:,1],color='blue',marker='X',s=200,label="centroid")
+plt.xlabel("Annual income")
+plt.ylabel("spending score")
+plt.legend()
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Practical  4
+#read and display the image
+
+import cv2
+image = cv2.imread("C:/Workarea/Rohit_Academic/BSC_IT/SEM_6/AI_CV_Pracs/wind.jpeg")
+
+#display img
+
+cv2.imshow("first",image)
+
+gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+cv2.imshow("second",gray)
+
+#resize
+resize = cv2.resize(image,(600,400))
+cv2.imshow("third",resize)
+
+#img rotation
+(h,w)= image.shape[:2]
+center = (w//2 , h//2)
+M = cv2.getRotationMatrix2D(center,45,1.0)
+rotated = cv2.warpAffine(image,M,(w,h))
+cv2.imshow("fourth",rotated)
+
+#crop
+crop = image[50:200,100:300]
+cv2.imshow("fifth",crop)
+
+cv2.waitKey(0)
+
+cv2.destroyAllWindows()
+practical 5 
+
+import cv2
+import numpy as np
+
+# Load Haar Cascade
+face_cascade = cv2.CascadeClassifier(
+    cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
+)
+
+# Read image
+img = cv2.imread('Rohit_tech.jpg')
+
+# Check if image is loaded
+if img is None:
+    print("Error: Image not found")
+    exit()
+
+# Convert to grayscale
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+# Detect faces
+faces = face_cascade.detectMultiScale(
+    gray,
+    scaleFactor=1.1,
+    minNeighbors=4,
+    minSize=(30, 30)
+)
+
+# Draw rectangle around faces
+for (x, y, w, h) in faces:
+    cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)  # BGR
+
+# Show output
+cv2.imshow('Detected Image', img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+
+practical 7 :
+
+import cv2
+import torch
+import segmentation_models_pytorch as smp
+import matplotlib.pyplot as plt
+
+# load model
+model = smp.Unet(
+    encoder_name="resnet34",        
+    encoder_weights="imagenet",     # Downloads pre-trained features
+    in_channels=3,                  
+    classes=1                       
+)
+model.eval()
+
+# read image
+img = cv2.imread('Rohit_termimatorjpg.jpg')
+img = cv2.resize(img, (128, 128))
+img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+# convert to tensor
+img_tensor = torch.from_numpy(img).float().permute(2, 0, 1).unsqueeze(0) / 255.0
+
+# prediction
+with torch.no_grad():
+    mask = model(img_tensor)
+    mask = torch.sigmoid(mask)        # apply sigmoid here if not in model
+    mask_np = mask[0, 0].numpy()
+
+# visualization
+plt.subplot(1, 2, 1)
+plt.title("Input Image")
+plt.imshow(img)
+
+plt.subplot(1, 2, 2)
+plt.title("Predicted Mask")
+plt.imshow(mask_np, cmap="gray")
+
+plt.show()
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+ 
+practical 8 :
+# Detect and match image features using OpenCV (ORB)
+
+import cv2
+import numpy as np
+
+# Read images in grayscale
+img1 = cv2.imread('Dilip_kumar_actor.jpg', cv2.IMREAD_GRAYSCALE)  # query image
+img2 = cv2.imread('dilip_kumar_actor_2.jpg', cv2.IMREAD_GRAYSCALE)  # train image
+
+# Check if images loaded
+if img1 is None or img2 is None:
+    print("Error: Image not found")
+    exit()
+
+# Create ORB detector
+orb = cv2.ORB_create()
+
+# Detect keypoints and compute descriptors
+kp1, des1 = orb.detectAndCompute(img1, None)
+kp2, des2 = orb.detectAndCompute(img2, None)
+
+# Create Brute Force Matcher
+bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
+
+# Match descriptors
+matches = bf.match(des1, des2)
+
+# Sort matches by distance (best first)
+matches = sorted(matches, key=lambda x: x.distance)
+
+# Draw first 20 matches
+result = cv2.drawMatches(
+    img1, kp1,
+    img2, kp2,
+    matches[:60],
+    None,
+    flags=2
+)
+
+# Show result
+cv2.imshow("Matches", result)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+ 
+Practical 9 :
+import cv2
+from ultralytics import YOLO
+import matplotlib.pyplot as plt
+
+
+model = YOLO("yolov8n.pt")
+image_path="image.jpg"
+
+img=cv2.imread(image_path)
+
+img_rgb=cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
+
+result=model(img_rgb)
+
+annoted_img = result[0].plot()
+
+cv2.imshow("Detection",annoted_img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+#plt.imshow(cv2.cvtColor(annoted_img,cv2.COLOR_BGR2RGB))
+plt.axis("Off")
+plt.show()
+
+
